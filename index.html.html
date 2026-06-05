@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Unit 3 — STP Study Notes</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg:          #0f1117;
+    --surface:     #171b26;
+    --surface2:    #1e2435;
+    --border:      #2a3148;
+
+    --seg:         #4f8ef7;   /* Segmentation — blue  */
+    --tar:         #f7934f;   /* Targeting    — amber */
+    --pos:         #4fcfa0;   /* Positioning  — teal  */
+    --geo:         #c47cf5;   /* Geographic   — purple*/
+    --dem:         #f76f87;   /* Demographic  — rose  */
+    --psy:         #fbbf24;   /* Psychographic— gold  */
+    --beh:         #34d399;   /* Behavioral   — green */
+
+    --text:        #e8eaf2;
+    --muted:       #8892a8;
+    --accent:      #4f8ef7;
+
+    --r:           14px;
+    --r-sm:        8px;
+
+    --font-head:   'Playfair Display', serif;
+    --font-body:   'DM Sans', sans-serif;
+    --font-mono:   'DM Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── HERO ─────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, #0d1526 0%, #131c38 50%, #0f1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 64px 40px 56px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 50%, rgba(79,142,247,.12) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 80% 50%, rgba(79,207,160,.10) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--seg);
+    border: 1px solid var(--seg);
+    border-radius: 50px;
+    padding: 4px 14px;
+    margin-bottom: 20px;
+    opacity: .85;
+  }
+  .hero h1 {
+    font-family: var(--font-head);
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+  .hero h1 span.hl { color: var(--seg); }
+  .hero p {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 540px;
+    margin: 0 auto 28px;
+  }
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  .pill {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 16px;
+    border-radius: 50px;
+    letter-spacing: .04em;
+  }
+  .pill-seg { background: rgba(79,142,247,.18); color: var(--seg); }
+  .pill-tar { background: rgba(247,147,79,.18); color: var(--tar); }
+  .pill-pos { background: rgba(79,207,160,.18); color: var(--pos); }
+
+  /* ── LAYOUT ───────────────────────────── */
+  .wrapper { max-width: 980px; margin: 0 auto; padding: 0 28px 100px; }
+
+  /* ── TOC ──────────────────────────────── */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--seg);
+    border-radius: var(--r);
+    padding: 28px 32px;
+    margin: 48px 0 56px;
+  }
+  .toc h2 { font-family: var(--font-head); font-size: 18px; color: var(--seg); margin-bottom: 16px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 6px; }
+  .toc a { color: var(--text); text-decoration: none; font-weight: 500; transition: color .2s; }
+  .toc a:hover { color: var(--seg); }
+  .toc .sub { padding-left: 18px; list-style: disc; margin-top: 4px; }
+  .toc .sub li { margin-bottom: 3px; }
+  .toc .sub a { color: var(--muted); font-weight: 400; font-size: 13.5px; }
+
+  /* ── SECTION HEADERS ─────────────────── */
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  h2.section-title {
+    font-family: var(--font-head);
+    font-size: 30px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--border);
+  }
+  h2.section-title.c-seg { border-color: var(--seg); }
+  h2.section-title.c-tar { border-color: var(--tar); }
+  h2.section-title.c-pos { border-color: var(--pos); }
+
+  h3.sub-title {
+    font-family: var(--font-head);
+    font-size: 20px;
+    color: #fff;
+    margin: 36px 0 12px;
+  }
+  h4.tag-title {
+    font-size: 13px;
+    font-family: var(--font-mono);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin: 24px 0 8px;
+  }
+
+  /* ── CARDS ────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 24px 28px;
+    margin-bottom: 20px;
+  }
+  .card.accent-seg { border-left: 4px solid var(--seg); }
+  .card.accent-tar { border-left: 4px solid var(--tar); }
+  .card.accent-pos { border-left: 4px solid var(--pos); }
+  .card.accent-geo { border-left: 4px solid var(--geo); }
+  .card.accent-dem { border-left: 4px solid var(--dem); }
+  .card.accent-psy { border-left: 4px solid var(--psy); }
+  .card.accent-beh { border-left: 4px solid var(--beh); }
+
+  .card h4 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #fff;
+  }
+  .card p { color: #c5cad8; font-size: 14.5px; }
+
+  /* ── GRID CARDS ──────────────────────── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+
+  @media(max-width:680px){
+    .grid-2,.grid-3,.grid-4{ grid-template-columns:1fr; }
+  }
+
+  /* ── DEFINITION BOX ──────────────────── */
+  .def-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 20px 24px;
+    margin: 18px 0;
+  }
+  .def-box .def-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .def-box p { font-size: 15px; color: var(--text); }
+
+  /* ── QUOTE ───────────────────────────── */
+  blockquote {
+    border-left: 3px solid var(--seg);
+    padding: 12px 20px;
+    margin: 18px 0;
+    background: var(--surface2);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    font-style: italic;
+    color: #c5cad8;
+  }
+
+  /* ── TABLE ───────────────────────────── */
+  .table-wrap { overflow-x: auto; margin: 20px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th {
+    background: var(--surface2);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text);
+    border-bottom: 2px solid var(--border);
+    font-size: 13px;
+    letter-spacing: .03em;
+  }
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    color: #c5cad8;
+    vertical-align: top;
+  }
+  tr:hover td { background: rgba(255,255,255,.025); }
+
+  /* ── MERMAID WRAPPER ─────────────────── */
+  .diagram-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 28px 20px;
+    margin: 22px 0;
+    overflow-x: auto;
+    text-align: center;
+  }
+  .diagram-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  /* ── BADGE PILLS ─────────────────────── */
+  .badge {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 50px;
+    margin: 3px 3px 3px 0;
+  }
+  .badge-seg { background: rgba(79,142,247,.18); color: var(--seg); }
+  .badge-tar { background: rgba(247,147,79,.18); color: var(--tar); }
+  .badge-pos { background: rgba(79,207,160,.18); color: var(--pos); }
+  .badge-geo { background: rgba(196,124,245,.18); color: var(--geo); }
+  .badge-dem { background: rgba(247,111,135,.18); color: var(--dem); }
+  .badge-psy { background: rgba(251,191,36,.18); color: var(--psy); }
+  .badge-beh { background: rgba(52,211,153,.18); color: var(--beh); }
+
+  /* ── CHECKLIST ───────────────────────── */
+  ul.check { list-style: none; padding: 0; }
+  ul.check li {
+    padding: 6px 0 6px 28px;
+    position: relative;
+    color: #c5cad8;
+    font-size: 14.5px;
+  }
+  ul.check li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: var(--seg);
+    font-size: 11px;
+    top: 9px;
+  }
+
+  /* ── STEP FLOW ───────────────────────── */
+  .step-flow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    margin: 24px 0;
+  }
+  .step-node {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 12px 18px;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-align: center;
+    min-width: 120px;
+  }
+  .step-arrow {
+    padding: 0 10px;
+    color: var(--muted);
+    font-size: 20px;
+  }
+
+  /* ── HIGHLIGHT BOX ───────────────────── */
+  .highlight-box {
+    border-radius: var(--r-sm);
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 14.5px;
+    font-weight: 500;
+  }
+  .hl-seg { background: rgba(79,142,247,.1); border: 1px solid rgba(79,142,247,.3); color: #b8d0fb; }
+  .hl-tar { background: rgba(247,147,79,.1); border: 1px solid rgba(247,147,79,.3); color: #fbcea8; }
+  .hl-pos { background: rgba(79,207,160,.1); border: 1px solid rgba(79,207,160,.3); color: #a7ecd8; }
+  .hl-info { background: rgba(136,146,168,.08); border: 1px solid var(--border); color: #c5cad8; }
+
+  /* ── EXAMPLE BLOCK ───────────────────── */
+  .example-block {
+    background: var(--surface2);
+    border: 1px dashed var(--border);
+    border-radius: var(--r-sm);
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .example-block .eg-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--tar);
+    margin-bottom: 8px;
+  }
+  .example-block p { color: #c5cad8; font-size: 14px; }
+
+  /* ── DIVIDER ──────────────────────────── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+  /* ── COMPARISON TABLE SPECIAL ─────────── */
+  .comp-table th { color: var(--seg); }
+
+  /* ── SUMMARY GRID ─────────────────────── */
+  .summary-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 20px;
+    text-align: center;
+  }
+  .summary-item .s-num {
+    font-family: var(--font-head);
+    font-size: 40px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .summary-item p { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+
+  /* ── POSITIONING STATEMENT ────────────── */
+  .pos-statement {
+    background: linear-gradient(135deg, rgba(79,207,160,.1), rgba(79,142,247,.1));
+    border: 1px solid rgba(79,207,160,.3);
+    border-radius: var(--r);
+    padding: 24px 28px;
+    margin: 20px 0;
+    font-size: 15px;
+    color: #d6f5ec;
+    line-height: 1.8;
+  }
+  .pos-statement strong { color: var(--pos); }
+
+  /* ── SCROLL ANIMATION ─────────────────── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .5s ease, transform .5s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── PRINT ───────────────────────────── */
+  @media print {
+    body { background: white; color: black; }
+    .hero { background: #f0f4ff; border-bottom: 2px solid #4f8ef7; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ HERO ══════════ -->
+<div class="hero">
+  <div class="hero-badge">Unit 3 · Marketing Management · BBA</div>
+  <h1>Segmentation, <span class="hl">Targeting</span><br>& Positioning</h1>
+  <p>Complete study notes covering the full STP framework — all concepts, strategies, bases, and examples.</p>
+  <div class="pill-row">
+    <span class="pill pill-seg">Segmentation</span>
+    <span class="pill pill-tar">Targeting</span>
+    <span class="pill pill-pos">Positioning</span>
+  </div>
+</div>
+
+<div class="wrapper">
+
+<!-- ══════════ TABLE OF CONTENTS ══════════ -->
+<div class="toc fade-in">
+  <h2>📋 Table of Contents</h2>
+  <ol>
+    <li><a href="#stp-intro">Introduction to the STP Model</a></li>
+    <li>
+      <a href="#levels">Levels of Market Segmentation</a>
+      <ul class="sub">
+        <li><a href="#mass">A. Mass Marketing (Undifferentiated)</a></li>
+        <li><a href="#segment-mktg">B. Segment Marketing (Differentiated)</a></li>
+        <li><a href="#niche">C. Niche Marketing (Concentrated)</a></li>
+        <li><a href="#micro">D. Micro Marketing (Local &amp; Individual)</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#bases">Bases of Consumer Market Segmentation</a>
+      <ul class="sub">
+        <li><a href="#geo">A. Geographic Segmentation</a></li>
+        <li><a href="#demo">B. Demographic Segmentation</a></li>
+        <li><a href="#psycho">C. Psychographic Segmentation</a></li>
+        <li><a href="#behav">D. Behavioral Segmentation</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#targeting">Targeting</a>
+      <ul class="sub">
+        <li><a href="#eval">Segment Evaluation Criteria</a></li>
+        <li><a href="#strategies">Targeting Strategies</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#positioning">Positioning</a>
+      <ul class="sub">
+        <li><a href="#pos-bases">Positioning Bases</a></li>
+        <li><a href="#pos-statement">Positioning Statement</a></li>
+        <li><a href="#perceptual">Perceptual Map</a></li>
+      </ul>
+    </li>
+    <li><a href="#differences">Differences Among S, T &amp; P</a></li>
+    <li><a href="#integration">STP Integration &amp; Apple Example</a></li>
+    <li><a href="#exam-topics">High-Importance Exam Topics</a></li>
+  </ol>
+</div>
+
+<!-- ══════════ 1. STP MODEL ══════════ -->
+<div id="stp-intro" class="fade-in">
+  <div class="section-label">Section 01</div>
+  <h2 class="section-title c-seg">Introduction to the STP Model</h2>
+
+  <div class="grid-2">
+    <div class="highlight-box hl-info">
+      <strong>Traditional (Product-Oriented):</strong><br>
+      "Sell what we produce."
+    </div>
+    <div class="highlight-box hl-seg">
+      <strong>Modern (Customer-Oriented):</strong><br>
+      "Produce what customers want."
+    </div>
+  </div>
+
+  <p style="color:#c5cad8; margin-bottom:20px;">Instead of treating the entire market as one large group, companies identify specific customer groups, select the most attractive ones, and develop offerings that match their requirements.</p>
+
+  <h3 class="sub-title">Meaning of Each Component</h3>
+  <div class="grid-3">
+    <div class="card accent-seg">
+      <h4>🔷 Segmentation</h4>
+      <p>Dividing a large heterogeneous market into smaller homogeneous groups of customers.</p>
+    </div>
+    <div class="card accent-tar">
+      <h4>🎯 Targeting</h4>
+      <p>Selecting the most attractive segment(s) for business focus and resource allocation.</p>
+    </div>
+    <div class="card accent-pos">
+      <h4>📌 Positioning</h4>
+      <p>Creating a distinctive image in the minds of customers relative to competitors.</p>
+    </div>
+  </div>
+
+  <h3 class="sub-title">STP Framework Flow</h3>
+  <div class="diagram-wrap">
+    <div class="diagram-label">STP Process</div>
+    <div class="mermaid">
+flowchart LR
+  A([🌐 Large Market]) -->|divide| B([📊 Segmentation])
+  B -->|select| C([🎯 Targeting])
+  C -->|design image| D([📌 Positioning])
+  D --> E([💎 Customer Value])
+  style A fill:#1e2435,stroke:#4f8ef7,color:#e8eaf2
+  style B fill:#1e2435,stroke:#4f8ef7,color:#4f8ef7
+  style C fill:#1e2435,stroke:#f7934f,color:#f7934f
+  style D fill:#1e2435,stroke:#4fcfa0,color:#4fcfa0
+  style E fill:#1e2435,stroke:#c47cf5,color:#c47cf5
+    </div>
+  </div>
+
+  <h3 class="sub-title">Marketing Evolution Path</h3>
+  <div class="diagram-wrap">
+    <div class="diagram-label">Evolution of Marketing Approach</div>
+    <div class="mermaid">
+flowchart LR
+  A([Mass Marketing]) --> B([Segmentation]) --> C([Targeting]) --> D([Positioning]) --> E([Personalization])
+  style A fill:#2a3148,stroke:#8892a8,color:#e8eaf2
+  style B fill:#1e2a40,stroke:#4f8ef7,color:#4f8ef7
+  style C fill:#1e2a40,stroke:#f7934f,color:#f7934f
+  style D fill:#1e2a40,stroke:#4fcfa0,color:#4fcfa0
+  style E fill:#1e2a40,stroke:#c47cf5,color:#c47cf5
+    </div>
+  </div>
+
+  <h3 class="sub-title">Why STP is Important</h3>
+  <div class="grid-2">
+    <ul class="check">
+      <li>Better understanding of customer needs</li>
+      <li>Efficient use of marketing resources</li>
+      <li>More effective communication strategies</li>
+      <li>Higher customer satisfaction levels</li>
+    </ul>
+    <ul class="check">
+      <li>Improved competitive advantage</li>
+      <li>Stronger brand loyalty over time</li>
+      <li>Higher overall profitability</li>
+    </ul>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════ 2. LEVELS OF SEGMENTATION ══════════ -->
+<div id="levels" class="fade-in">
+  <div class="section-label">Section 02</div>
+  <h2 class="section-title c-seg">Levels of Market Segmentation</h2>
+
+  <p style="color:#c5cad8; margin-bottom:18px;">A company cannot effectively serve every customer in a large market. Depending on resources, product type, market conditions, and competitive intensity, companies adopt different levels of segmentation.</p>
+
+  <div class="diagram-wrap">
+    <div class="diagram-label">Hierarchy — Broadest to Narrowest Focus</div>
+    <div class="mermaid">
+flowchart LR
+  A([Mass Marketing]) --> B([Segment Marketing]) --> C([Niche Marketing]) --> D([Micro Marketing])
+  style A fill:#1e2435,stroke:#8892a8,color:#e8eaf2
+  style B fill:#1e2435,stroke:#4f8ef7,color:#4f8ef7
+  style C fill:#1e2435,stroke:#f7934f,color:#f7934f
+  style D fill:#1e2435,stroke:#4fcfa0,color:#4fcfa0
+    </div>
+  </div>
+
+  <!-- A. MASS MARKETING -->
+  <div id="mass">
+    <h3 class="sub-title">A. Mass Marketing <span style="font-size:15px;color:var(--muted);font-family:var(--font-mono)">(Undifferentiated Marketing)</span></h3>
+
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>Mass marketing involves <strong>mass production, mass distribution, and mass promotion</strong> of a single product for all consumers. Every customer is treated similarly and individual differences are largely ignored.</p>
+    </div>
+
+    <h4 class="tag-title" style="color:var(--muted)">Characteristics</h4>
+    <div class="grid-2">
+      <ul class="check">
+        <li>Standardized product for all</li>
+        <li>Single marketing program</li>
+      </ul>
+      <ul class="check">
+        <li>Large-scale production</li>
+        <li>Broad customer base</li>
+      </ul>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <h4 class="tag-title" style="color:#4fcfa0">✅ Advantages</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Advantage</th><th>Explanation</th></tr></thead>
+            <tbody>
+              <tr><td>Economies of Scale</td><td>Lower cost per unit</td></tr>
+              <tr><td>Simplicity</td><td>Easier management</td></tr>
+              <tr><td>Wider Reach</td><td>Larger audience</td></tr>
+              <tr><td>Lower Marketing Costs</td><td>One campaign for all</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <h4 class="tag-title" style="color:#f76f87">❌ Limitations</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Limitation</th><th>Explanation</th></tr></thead>
+            <tbody>
+              <tr><td>Ignores Differences</td><td>Diverse needs not addressed</td></tr>
+              <tr><td>Lower Personalization</td><td>Generic offerings</td></tr>
+              <tr><td>Strong Competition</td><td>Difficult differentiation</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <h4 class="tag-title" style="color:var(--tar)">Examples</h4>
+    <div class="grid-2">
+      <div class="example-block">
+        <div class="eg-label">Example — Henry Ford</div>
+        <p><strong>Model T Strategy:</strong></p>
+        <blockquote>"You can have any color you want, as long as it is black."</blockquote>
+      </div>
+      <div class="example-block">
+        <div class="eg-label">Example — India</div>
+        <p><strong>Amul Butter</strong> and <strong>Tata Salt</strong> historically operated using mass marketing principles — one product for the entire Indian market.</p>
+      </div>
+    </div>
+
+    <div class="diagram-wrap">
+      <div class="diagram-label">Mass Marketing Flow</div>
+      <div class="mermaid">
+flowchart TD
+  Co([🏢 Company]) --> M([📢 Market])
+  M --> C1([Customer 1])
+  M --> C2([Customer 2])
+  M --> C3([Customer 3])
+  M --> C4([Customer 4])
+  style Co fill:#1e2435,stroke:#8892a8,color:#e8eaf2
+  style M fill:#1e2435,stroke:#4f8ef7,color:#4f8ef7
+  style C1 fill:#2a3148,stroke:#4f8ef7,color:#c5cad8
+  style C2 fill:#2a3148,stroke:#4f8ef7,color:#c5cad8
+  style C3 fill:#2a3148,stroke:#4f8ef7,color:#c5cad8
+  style C4 fill:#2a3148,stroke:#4f8ef7,color:#c5cad8
+      </div>
+    </div>
+  </div>
+
+  <!-- B. SEGMENT MARKETING -->
+  <div id="segment-mktg">
+    <h3 class="sub-title">B. Segment Marketing <span style="font-size:15px;color:var(--muted);font-family:var(--font-mono)">(Differentiated Marketing)</span></h3>
+
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>The company divides the market into broad segments and <strong>develops different offerings for one or more segments</strong>. Customers have different needs, so groups with similar needs are clustered together and served distinctly.</p>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <h4 class="tag-title" style="color:#4fcfa0">✅ Advantages</h4>
+        <ul class="check">
+          <li>Higher customer satisfaction</li>
+          <li>Better product fit</li>
+          <li>Stronger brand loyalty</li>
+          <li>Improved market coverage</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="tag-title" style="color:#f76f87">⚠️ Challenges</h4>
+        <ul class="check">
+          <li>Higher costs due to multiple programs</li>
+          <li>More complex management</li>
+          <li>Multiple marketing programs required</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="example-block">
+      <div class="eg-label">Example — Maruti Suzuki</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Market Segment</th><th>Product Offered</th></tr></thead>
+          <tbody>
+            <tr><td>Budget Families</td><td>Alto</td></tr>
+            <tr><td>Middle-Class Families</td><td>WagonR</td></tr>
+            <tr><td>Young Professionals</td><td>Swift</td></tr>
+            <tr><td>Premium Customers</td><td>Grand Vitara</td></tr>
+            <tr><td>Premium Nexa Buyers</td><td>Invicto</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="diagram-wrap">
+      <div class="diagram-label">Segment Marketing Flow</div>
+      <div class="mermaid">
+flowchart TD
+  M([🌐 Market]) --> SA([Segment A]) & SB([Segment B]) & SC([Segment C])
+  SA --> PA([Product A])
+  SB --> PB([Product B])
+  SC --> PC([Product C])
+  style M fill:#1e2435,stroke:#4f8ef7,color:#4f8ef7
+  style SA fill:#2a3148,stroke:#f7934f,color:#f7934f
+  style SB fill:#2a3148,stroke:#f7934f,color:#f7934f
+  style SC fill:#2a3148,stroke:#f7934f,color:#f7934f
+  style PA fill:#2a3148,stroke:#4fcfa0,color:#4fcfa0
+  style PB fill:#2a3148,stroke:#4fcfa0,color:#4fcfa0
+  style PC fill:#2a3148,stroke:#4fcfa0,color:#4fcfa0
+      </div>
+    </div>
+  </div>
+
+  <!-- C. NICHE MARKETING -->
+  <div id="niche">
+    <h3 class="sub-title">C. Niche Marketing <span style="font-size:15px;color:var(--muted);font-family:var(--font-mono)">(Concentrated Marketing)</span></h3>
+
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>A company focuses on a <strong>narrowly defined group of customers with specialized needs</strong>. Niches are smaller than broad segments. The philosophy: <em>"Be a big fish in a small pond — focus deeply rather than broadly."</em></p>
+    </div>
+
+    <h4 class="tag-title" style="color:var(--muted)">Characteristics</h4>
+    <ul class="check">
+      <li>Specialized offerings tailored to a specific need</li>
+      <li>Limited competition from generalist brands</li>
+      <li>Highly focused, targeted marketing efforts</li>
+    </ul>
+
+    <div class="table-wrap" style="margin-top:16px;">
+      <table>
+        <thead><tr><th>Advantage</th><th>Explanation</th></tr></thead>
+        <tbody>
+          <tr><td>Premium Pricing</td><td>Customers are willing to pay more for specialized solutions</td></tr>
+          <tr><td>Strong Loyalty</td><td>Better satisfaction leads to repeat purchase</td></tr>
+          <tr><td>Lower Competition</td><td>Few rivals operate in the same niche</td></tr>
+          <tr><td>Deep Expertise</td><td>Company builds specialization and credibility</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="example-block">
+        <div class="eg-label">Example 1 — Sensodyne</div>
+        <p>Focuses specifically on consumers with <strong>sensitive teeth</strong>, rather than competing in general oral care. Commands premium pricing and strong loyalty.</p>
+      </div>
+      <div class="example-block">
+        <div class="eg-label">Example 2 — Ananda Healthcare</div>
+        <p>Focuses exclusively on <strong>Luxury Ayurveda Wellness Retreats</strong> — a highly defined niche within the broader wellness/hospitality market.</p>
+      </div>
+    </div>
+
+    <div class="diagram-wrap">
+      <div class="diagram-label">Niche Marketing — Narrowing Down</div>
+      <div class="mermaid">
+flowchart TD
+  L([🌐 Large Market]) --> S([📊 Broad Segment]) --> N([🔍 Niche]) --> Sp([👤 Specialized Customers])
+  style L fill:#1e2435,stroke:#4f8ef7,color:#4f8ef7
+  style S fill:#1e2435,stroke:#f7934f,color:#f7934f
+  style N fill:#1e2435,stroke:#c47cf5,color:#c47cf5
+  style Sp fill:#1e2435,stroke:#4fcfa0,color:#4fcfa0
+      </div>
+    </div>
+  </div>
+
+  <!-- D. MICRO MARKETING -->
+  <div id="micro">
+    <h3 class="sub-title">D. Micro Marketing <span style="font-size:15px;color:var(--muted);font-family:var(--font-mono)">(Local &amp; Individual Marketing)</span></h3>
+
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>Micro marketing involves <strong>tailoring products and marketing programs to local groups, specific communities, or individual customers</strong>.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card accent-tar">
+        <h4>📍 Local Marketing</h4>
+        <p>Products are customized according to the needs of local communities or geographic clusters.</p>
+        <div class="example-block" style="margin-top:12px;">
+          <div class="eg-label">Example — McDonald's India</div>
+          <p>Offers McAloo Tikki and Maharaja Mac — products that differ significantly from U.S. offerings to suit Indian tastes and preferences.</p>
+        </div>
+      </div>
+      <div class="card accent-pos">
+        <h4>🧍 Individual Marketing</h4>
+        <p>Also known as <strong>One-to-One Marketing, Segment of One, or Mass Customization</strong>. Products are designed for each individual customer.</p>
+        <div class="example-block" style="margin-top:12px;">
+          <div class="eg-label">Examples</div>
+          <p><strong>Nike By You:</strong> Customers design their own shoes.<br><strong>Corporate Gifting:</strong> Products customized per client specifications.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram-wrap">
+      <div class="diagram-label">Micro Marketing — Individual Focus</div>
+      <div class="mermaid">
+flowchart TD
+  C([👤 Customer]) --> CP([🎨 Customized Product]) --> PE([✨ Personalized Experience])
+  style C fill:#1e2435,stroke:#f7934f,color:#f7934f
+  style CP fill:#1e2435,stroke:#c47cf5,color:#c47cf5
+  style PE fill:#1e2435,stroke:#4fcfa0,color:#4fcfa0
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════ 3. BASES OF SEGMENTATION ══════════ -->
+<div id="bases" class="fade-in">
+  <div class="section-label">Section 03</div>
+  <h2 class="section-title c-seg">Bases of Consumer Market Segmentation</h2>
+
+  <p style="color:#c5cad8; margin-bottom:20px;">Marketers use specific variables to divide a large market into meaningful groups. The four major segmentation bases are:</p>
+
+  <div class="grid-4">
+    <div class="card accent-geo"><h4 style="color:var(--geo)">🗺️ Geographic</h4><p>Nation, state, region, city, climate, density</p></div>
+    <div class="card accent-dem"><h4 style="color:var(--dem)">👥 Demographic</h4><p>Age, gender, income, occupation, education</p></div>
+    <div class="card accent-psy"><h4 style="color:var(--psy)">🧠 Psychographic</h4><p>Lifestyle, personality, values, social class</p></div>
+    <div class="card accent-beh"><h4 style="color:var(--beh)">⚡ Behavioral</h4><p>Occasions, benefits, loyalty, usage rate</p></div>
+  </div>
+
+  <!-- A. GEOGRAPHIC -->
+  <div id="geo">
+    <h3 class="sub-title" style="color:var(--geo)">A. Geographic Segmentation</h3>
+
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>Dividing markets based on <strong>geographic boundaries</strong> such as nation, state, region, city, climate, and population density. Consumer needs differ significantly across urban vs rural markets.</p>
+    </div>
+
+    <h4 class="tag-title" style="color:var(--geo)">Segmentation Variables</h4>
+    <div class="grid-3">
+      <span class="badge badge-geo">Nation</span>
+      <span class="badge badge-geo">State</span>
+      <span class="badge badge-geo">Region</span>
+      <span class="badge badge-geo">City</span>
+      <span class="badge badge-geo">Climate</span>
+      <span class="badge badge-geo">Population Density</span>
+    </div>
+
+    <div class="example-block">
+      <div class="eg-label">Example — Godrej &amp; Voltas</div>
+      <div class="grid-2">
+        <p>🌡️ <strong>Hot regions:</strong> Promote Air Conditioners heavily to meet high cooling demand.</p>
+        <p>❄️ <strong>Cold regions:</strong> Promote Room Heaters and Water Geysers for warming needs.</p>
+      </div>
+    </div>
+
+    <div class="diagram-wrap">
+      <div class="diagram-label">Geographic Variables</div>
+      <div class="mermaid">
+flowchart TD
+  G([🗺️ Geography]) --> N([Nation]) & St([State]) & R([Region]) & Ci([City]) & Cl([Climate])
+  style G fill:#1e2435,stroke:#c47cf5,color:#c47cf5
+  style N fill:#2a3148,stroke:#c47cf5,color:#c5cad8
+  style St fill:#2a3148,stroke:#c47cf5,color:#c5cad8
+  style R fill:#2a3148,stroke:#c47cf5,color:#c5cad8
+  style Ci fill:#2a3148,stroke:#c47cf5,color:#c5cad8
+  style Cl fill:#2a3148,stroke:#c47cf5,color:#c5cad8
+      </div>
+    </div>
+  </div>
+
+  <!-- B. DEMOGRAPHIC -->
+  <div id="demo">
+    <h3 class="sub-title" style="color:var(--dem)">B. Demographic Segmentation</h3>
+
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>Dividing consumers according to <strong>measurable characteristics</strong> such as age, gender, income, occupation, education, religion, and family life cycle. This is the <strong>most popular segmentation base</strong> because these variables are easy to measure.</p>
+    </div>
+
+    <h4 class="tag-title" style="color:var(--dem)">Segmentation Variables</h4>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
+      <span class="badge badge-dem">Age</span>
+      <span class="badge badge-dem">Gender</span>
+      <span class="badge badge-dem">Income</span>
+      <span class="badge badge-dem">Occupation</span>
+      <span class="badge badge-dem">Education</span>
+      <span class="badge badge-dem">Religion</span>
+      <span class="badge badge-dem">Family Life Cycle</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="example-block">
+        <div class="eg-label">Example — Gender Segmentation (L'Oréal)</div>
+        <p>L'Oréal develops entirely different product lines for <strong>Men</strong> and <strong>Women</strong>, recognizing different grooming needs, preferences, and buying motivations.</p>
+      </div>
+      <div class="example-block">
+        <div class="eg-label">Example — Income Segmentation (Titan)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Income Group</th><th>Brand</th></tr></thead>
+            <tbody>
+              <tr><td>Price Sensitive</td><td>Sonata</td></tr>
+              <tr><td>Middle Class</td><td>Titan Regalia</td></tr>
+              <tr><td>Affluent</td><td>Nebula</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram-wrap">
+      <div class="diagram-label">Demographic Variables</div>
+      <div class="mermaid">
+mindmap
+  root((👥 Demographic))
+    Age
+    Gender
+    Income
+    Occupation
+    Religion
+    Education
+    FamilyLifeCycle
+      </div>
+    </div>
+  </div>
+
+  <!-- C. PSYCHOGRAPHIC -->
+  <div id="psycho">
+    <h3 class="sub-title" style="color:var(--psy)">C. Psychographic Segmentation</h3>
+
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>Dividing consumers according to their <strong>lifestyle, personality, values, interests, and social class</strong>. Key insight: <em>Two consumers may have identical demographics but completely different lifestyles.</em></p>
+    </div>
+
+    <h4 class="tag-title" style="color:var(--psy)">Segmentation Variables</h4>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
+      <span class="badge badge-psy">Lifestyle</span>
+      <span class="badge badge-psy">Personality</span>
+      <span class="badge badge-psy">Values</span>
+      <span class="badge badge-psy">Interests</span>
+      <span class="badge badge-psy">Social Class</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="example-block">
+        <div class="eg-label">Example — Royal Enfield</div>
+        <p>Targets consumers who value <strong>Adventure, Freedom, and a Rugged Lifestyle</strong>. The brand personality is bold, independent, and exploratory.</p>
+      </div>
+      <div class="example-block">
+        <div class="eg-label">Example — Honda Activa</div>
+        <p>Targets consumers who value <strong>Practicality, Safety, and Convenience</strong>. The brand is associated with reliability and ease of daily use.</p>
+      </div>
+    </div>
+
+    <div class="diagram-wrap">
+      <div class="diagram-label">Psychographic Variables</div>
+      <div class="mermaid">
+flowchart TD
+  P([🧠 Psychographic]) --> L([Lifestyle]) & Pe([Personality]) & V([Values]) & SC([Social Class])
+  style P fill:#1e2435,stroke:#fbbf24,color:#fbbf24
+  style L fill:#2a3148,stroke:#fbbf24,color:#c5cad8
+  style Pe fill:#2a3148,stroke:#fbbf24,color:#c5cad8
+  style V fill:#2a3148,stroke:#fbbf24,color:#c5cad8
+  style SC fill:#2a3148,stroke:#fbbf24,color:#c5cad8
+      </div>
+    </div>
+  </div>
+
+  <!-- D. BEHAVIORAL -->
+  <div id="behav">
+    <h3 class="sub-title" style="color:var(--beh)">D. Behavioral Segmentation</h3>
+
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>Dividing consumers according to their <strong>actual behavior toward products</strong>. Many marketers consider behavioral segmentation the <strong>most useful segmentation base</strong> as it directly reflects buying action.</p>
+    </div>
+
+    <h4 class="tag-title" style="color:var(--beh)">Occasion-Based Segmentation</h4>
+    <p style="color:#c5cad8;margin-bottom:12px;">Purchasing triggered by special occasions:</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
+      <span class="badge badge-beh">Diwali</span>
+      <span class="badge badge-beh">Durga Puja</span>
+      <span class="badge badge-beh">Weddings</span>
+    </div>
+
+    <h4 class="tag-title" style="color:var(--beh)">Benefits Sought</h4>
+    <p style="color:#c5cad8;margin-bottom:12px;">Segmenting by the specific benefit the customer is looking for:</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
+      <span class="badge badge-beh">Dandruff Control</span>
+      <span class="badge badge-beh">Hair Fall Reduction</span>
+      <span class="badge badge-beh">Shine</span>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <h4 class="tag-title" style="color:var(--beh)">User Status</h4>
+        <ul class="check">
+          <li>Non-Users</li>
+          <li>Potential Users</li>
+          <li>First-Time Users</li>
+          <li>Regular Users</li>
+          <li>Former Users</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="tag-title" style="color:var(--beh)">Usage Rate</h4>
+        <ul class="check">
+          <li>Light Users</li>
+          <li>Medium Users</li>
+          <li>Heavy Users</li>
+        </ul>
+        <h4 class="tag-title" style="color:var(--beh);margin-top:16px;">Loyalty Status</h4>
+        <ul class="check">
+          <li>Hard-Core Loyal</li>
+          <li>Split Loyal</li>
+          <li>Shifting Loyal</li>
+          <li>Switchers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="example-block">
+      <div class="eg-label">Example — Cadbury Celebrations Gift Packs</div>
+      <p>These packs are targeted specifically toward <strong>festivals and gifting occasions</strong> — a classic example of occasion-based behavioral segmentation. The product design, packaging, and advertising all reflect this behavior context.</p>
+    </div>
+
+    <div class="diagram-wrap">
+      <div class="diagram-label">Behavioral Segmentation Variables</div>
+      <div class="mermaid">
+mindmap
+  root((⚡ Behavioral))
+    Occasions
+    BenefitsSought
+    UserStatus
+      NonUsers
+      PotentialUsers
+      FirstTimeUsers
+      RegularUsers
+      FormerUsers
+    UsageRate
+      Light
+      Medium
+      Heavy
+    LoyaltyStatus
+      HardCoreLloyal
+      SplitLoyal
+      ShiftingLoyal
+      Switchers
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════ 4. TARGETING ══════════ -->
+<div id="targeting" class="fade-in">
+  <div class="section-label">Section 04</div>
+  <h2 class="section-title c-tar">Targeting</h2>
+
+  <div class="def-box">
+    <div class="def-label">Definition</div>
+    <p><strong>Targeting</strong> is the process of evaluating different market segments and selecting the most attractive segment(s) for business focus and resource allocation. After dividing the market, a company must decide which segment(s) it actually wants to serve.</p>
+  </div>
+
+  <div class="diagram-wrap">
+    <div class="diagram-label">Position of Targeting in STP</div>
+    <div class="mermaid">
+flowchart LR
+  S([Segmentation]) -->|Identify Groups| T([Targeting]) -->|Select Groups| P([Positioning])
+  T --> SG([Select Groups])
+  S --> IG([Identify Groups])
+  P --> BI([Build Brand Image])
+  style S fill:#1e2435,stroke:#4f8ef7,color:#4f8ef7
+  style T fill:#1e2435,stroke:#f7934f,color:#f7934f
+  style P fill:#1e2435,stroke:#4fcfa0,color:#4fcfa0
+  style IG fill:#2a3148,stroke:#4f8ef7,color:#c5cad8
+  style SG fill:#2a3148,stroke:#f7934f,color:#c5cad8
+  style BI fill:#2a3148,stroke:#4fcfa0,color:#c5cad8
+    </div>
+  </div>
+
+  <h3 class="sub-title">Benefits of Targeting</h3>
+  <div class="grid-2">
+    <ul class="check">
+      <li>Efficient resource allocation</li>
+      <li>Better understanding of customer needs</li>
+      <li>Higher profitability per campaign</li>
+    </ul>
+    <ul class="check">
+      <li>Reduced wastage of marketing efforts</li>
+      <li>Improved competitive advantage</li>
+      <li>Better communication effectiveness</li>
+    </ul>
+  </div>
+
+  <h3 class="sub-title">Target Market Selection Process</h3>
+  <div class="diagram-wrap">
+    <div class="diagram-label">Selection Flow</div>
+    <div class="mermaid">
+flowchart LR
+  A([Market Segmentation]) --> B([Segment Evaluation]) --> C([Segment Selection]) --> D([Target Market])
+  style A fill:#1e2435,stroke:#f7934f,color:#f7934f
+  style B fill:#1e2435,stroke:#f7934f,color:#f7934f
+  style C fill:#1e2435,stroke:#f7934f,color:#f7934f
+  style D fill:#1e2435,stroke:#4fcfa0,color:#4fcfa0
+    </div>
+  </div>
+
+  <!-- EVALUATING SEGMENTS -->
+  <div id="eval">
+    <h3 class="sub-title">Evaluating Market Segments</h3>
+    <p style="color:#c5cad8;margin-bottom:18px;">Before selecting a target market, marketers evaluate each segment on five key criteria:</p>
+
+    <div class="grid-2">
+      <div class="card accent-tar">
+        <h4>1️⃣ Segment Size</h4>
+        <p><em>Is the segment large enough to be profitable?</em></p>
+        <p style="margin-top:8px;font-size:13.5px;color:var(--muted)">Example: Luxury sports cars may have limited customers compared to commuter motorcycles.</p>
+      </div>
+      <div class="card accent-tar">
+        <h4>2️⃣ Segment Growth Potential</h4>
+        <p><em>Will the segment continue growing in the future?</em></p>
+        <p style="margin-top:8px;font-size:13.5px;color:var(--muted)">Example: Electric Vehicles represent a rapidly growing segment.</p>
+      </div>
+      <div class="card accent-tar">
+        <h4>3️⃣ Structural Attractiveness</h4>
+        <p><em>How intense is the competition?</em> Consider: number of competitors, entry barriers, substitutes, supplier power, and buyer power.</p>
+        <p style="margin-top:8px;font-size:13.5px;color:var(--muted)">Example: The smartphone market is highly competitive.</p>
+      </div>
+      <div class="card accent-tar">
+        <h4>4️⃣ Company Objectives</h4>
+        <p><em>Does the segment align with company goals?</em></p>
+        <p style="margin-top:8px;font-size:13.5px;color:var(--muted)">Example: A premium brand may avoid highly price-sensitive segments.</p>
+      </div>
+    </div>
+    <div class="card accent-tar" style="max-width:480px;">
+      <h4>5️⃣ Company Resources</h4>
+      <p><em>Does the company possess sufficient resources to serve this segment?</em></p>
+      <p style="margin-top:8px;font-size:13.5px;color:var(--muted)">Example: Small firms may struggle to compete in mass markets that require heavy ad spend.</p>
+    </div>
+
+    <div class="diagram-wrap">
+      <div class="diagram-label">Segment Evaluation Framework</div>
+      <div class="mermaid">
+mindmap
+  root((Segment Evaluation))
+    Size
+    GrowthPotential
+    StructuralAttractiveness
+      Competitors
+      EntryBarriers
+      Substitutes
+      SupplierPower
+      BuyerPower
+    CompanyObjectives
+    CompanyResources
+      </div>
+    </div>
+  </div>
+
+  <!-- TARGETING STRATEGIES -->
+  <div id="strategies">
+    <h3 class="sub-title">Targeting Strategies</h3>
+
+    <div class="grid-2">
+      <!-- Undifferentiated -->
+      <div class="card accent-seg">
+        <h4>A. Undifferentiated Marketing</h4>
+        <p>The company <strong>ignores segment differences</strong> and targets the entire market with one offer. Philosophy: <em>"One product for all customers."</em></p>
+        <div style="margin-top:12px;">
+          <span class="badge badge-seg">Economies of Scale</span>
+          <span class="badge badge-seg">Lower Marketing Cost</span>
+          <span class="badge badge-seg">Simpler Management</span>
+        </div>
+        <p style="margin-top:10px;font-size:13px;color:var(--muted)">Example: Traditional Tata Salt strategy.</p>
+      </div>
+      <!-- Differentiated -->
+      <div class="card accent-tar">
+        <h4>B. Differentiated Marketing</h4>
+        <p>The company <strong>targets multiple segments</strong> using different offerings tailored for each group.</p>
+        <div style="margin-top:12px;">
+          <span class="badge badge-tar">Greater Coverage</span>
+          <span class="badge badge-tar">Better Satisfaction</span>
+          <span class="badge badge-tar">Increased Sales</span>
+        </div>
+        <p style="margin-top:10px;font-size:13px;color:var(--muted)">Example: Maruti Suzuki — Alto, WagonR, Swift, Grand Vitara.</p>
+      </div>
+      <!-- Concentrated -->
+      <div class="card accent-pos">
+        <h4>C. Concentrated Marketing</h4>
+        <p>The company <strong>focuses on one segment or niche</strong>. This builds strong expertise and allows premium pricing, but creates vulnerability if the segment shrinks.</p>
+        <div style="margin-top:12px;">
+          <span class="badge badge-pos">Strong Expertise</span>
+          <span class="badge badge-pos">Premium Pricing</span>
+          <span class="badge badge-pos">High Loyalty</span>
+        </div>
+        <p style="margin-top:10px;font-size:13px;color:var(--muted)">Example: Sensodyne — sensitive teeth customers only.</p>
+      </div>
+      <!-- Micromarketing -->
+      <div class="card accent-geo">
+        <h4>D. Micromarketing</h4>
+        <p>Products and programs are <strong>customized for specific local groups or individuals</strong>. Highest personalization level.</p>
+        <div style="margin-top:12px;">
+          <span class="badge badge-geo">Local Marketing</span>
+          <span class="badge badge-geo">Individual Marketing</span>
+          <span class="badge badge-geo">Mass Customization</span>
+        </div>
+        <p style="margin-top:10px;font-size:13px;color:var(--muted)">Example: Nike By You — custom shoe design per customer.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════ 5. POSITIONING ══════════ -->
+<div id="positioning" class="fade-in">
+  <div class="section-label">Section 05</div>
+  <h2 class="section-title c-pos">Positioning</h2>
+
+  <div class="def-box">
+    <div class="def-label">Definition</div>
+    <p><strong>Positioning</strong> is the act of designing a company's offering and image to <strong>occupy a distinctive place in the mind of the target customer relative to competitors</strong>. It answers: <em>"Why should customers choose our brand instead of competitors?"</em></p>
+  </div>
+
+  <h3 class="sub-title">Positioning Process</h3>
+  <div class="diagram-wrap">
+    <div class="diagram-label">Positioning Flow</div>
+    <div class="mermaid">
+flowchart LR
+  TM([Target Market]) --> IA([Identify Advantages]) --> DP([Develop Positioning]) --> MM([Marketing Mix]) --> CP([Customer Perception])
+  style TM fill:#1e2435,stroke:#4fcfa0,color:#4fcfa0
+  style IA fill:#1e2435,stroke:#4fcfa0,color:#4fcfa0
+  style DP fill:#1e2435,stroke:#4fcfa0,color:#4fcfa0
+  style MM fill:#1e2435,stroke:#4fcfa0,color:#4fcfa0
+  style CP fill:#1e2435,stroke:#4fcfa0,color:#4fcfa0
+    </div>
+  </div>
+
+  <!-- POSITIONING BASES -->
+  <div id="pos-bases">
+    <h3 class="sub-title">Positioning Bases</h3>
+    <p style="color:#c5cad8;margin-bottom:18px;">Companies can position products using several different criteria:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Positioning Base</th>
+            <th>Description</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td><strong>By Attributes</strong></td><td>Highlighting specific product features</td><td>Volvo → Safety</td></tr>
+          <tr><td>2</td><td><strong>By Benefits</strong></td><td>Highlighting the benefit received by the customer</td><td>Sensodyne → Relief from sensitivity</td></tr>
+          <tr><td>3</td><td><strong>By Usage</strong></td><td>Associating product with a specific use occasion</td><td>Gatorade → Sports Performance</td></tr>
+          <tr><td>4</td><td><strong>By User</strong></td><td>Targeting a specific user group identity</td><td>Johnson's Baby → Babies</td></tr>
+          <tr><td>5</td><td><strong>By Competitor</strong></td><td>Positioning directly against a rival</td><td>Pepsi vs Coca-Cola</td></tr>
+          <tr><td>6</td><td><strong>By Product Category</strong></td><td>Establishing category leadership</td><td>Maggi → Instant Noodles</td></tr>
+          <tr><td>7</td><td><strong>By Price-Quality</strong></td><td>Positioning as premium or economical</td><td>Rolex → Luxury; Titan Sonata → Value</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="diagram-wrap">
+      <div class="diagram-label">Positioning Bases Overview</div>
+      <div class="mermaid">
+mindmap
+  root((📌 Positioning Bases))
+    Attributes
+      Features
+    Benefits
+      CustomerOutcomes
+    Usage
+      UseOccasion
+    User
+      UserGroup
+    Competitor
+      ComparativePositioning
+    Category
+      CategoryLeadership
+    PriceQuality
+      Premium
+      Economy
+      </div>
+    </div>
+  </div>
+
+  <!-- POSITIONING STATEMENT -->
+  <div id="pos-statement">
+    <h3 class="sub-title">Positioning Statement</h3>
+    <p style="color:#c5cad8;margin-bottom:14px;">A positioning statement clearly communicates the brand's intended position in a structured format:</p>
+
+    <div class="pos-statement">
+      For <strong>(target market)</strong>, our brand is <strong>(frame of reference)</strong> that provides <strong>(benefit)</strong> because <strong>(reason to believe)</strong>.
+    </div>
+
+    <div class="example-block">
+      <div class="eg-label">Example — Apple iPhone</div>
+      <p>For <strong>young urban professionals</strong>, Apple iPhone is a <strong>premium smartphone</strong> that delivers <strong>superior user experience</strong> because of its <strong>ecosystem, design, and innovation</strong>.</p>
+    </div>
+  </div>
+
+  <!-- PERCEPTUAL MAP -->
+  <div id="perceptual">
+    <h3 class="sub-title">Brand Perceptual Map</h3>
+    <p style="color:#c5cad8;margin-bottom:14px;">A perceptual map visually shows how customers perceive different brands relative to competitors along two key dimensions.</p>
+
+    <div class="diagram-wrap">
+      <div class="diagram-label">Smartphone Market — Perceptual Map</div>
+      <div class="mermaid">
+quadrantChart
+  title Smartphone Market Perceptual Map
+  x-axis Economy --> Premium
+  y-axis Basic Features --> Advanced Features
+  quadrant-1 Premium Leaders
+  quadrant-2 Emerging Premium
+  quadrant-3 Budget Brands
+  quadrant-4 Value Brands
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════ 6. DIFFERENCES ══════════ -->
+<div id="differences" class="fade-in">
+  <div class="section-label">Section 06</div>
+  <h2 class="section-title" style="border-color:#c47cf5">Differences Among Segmentation, Targeting &amp; Positioning</h2>
+
+  <p style="color:#c5cad8;margin-bottom:20px;">STP is a continuous three-step process. Each stage has a distinct objective, question, and outcome:</p>
+
+  <div class="table-wrap">
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th style="color:var(--seg)">Segmentation</th>
+          <th style="color:var(--tar)">Targeting</th>
+          <th style="color:var(--pos)">Positioning</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Core Meaning</strong></td>
+          <td>Dividing the market into groups</td>
+          <td>Selecting which groups to serve</td>
+          <td>Creating a brand image</td>
+        </tr>
+        <tr>
+          <td><strong>Primary Question</strong></td>
+          <td>How can the market be divided?</td>
+          <td>Which group should be served?</td>
+          <td>Why should customers choose us?</td>
+        </tr>
+        <tr>
+          <td><strong>Focus</strong></td>
+          <td>Analytical</td>
+          <td>Strategic</td>
+          <td>Psychological</td>
+        </tr>
+        <tr>
+          <td><strong>Main Activity</strong></td>
+          <td>Identify segments</td>
+          <td>Select segments</td>
+          <td>Build perception</td>
+        </tr>
+        <tr>
+          <td><strong>Outcome</strong></td>
+          <td>Segment Profiles</td>
+          <td>Target Market</td>
+          <td>Brand Position</td>
+        </tr>
+        <tr>
+          <td><strong>Analogy</strong></td>
+          <td>Slicing the cake</td>
+          <td>Choosing the slice</td>
+          <td>Presenting the slice attractively</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-title">The Bakery Analogy</h3>
+  <div class="grid-3">
+    <div class="card accent-seg">
+      <h4 style="color:var(--seg)">🔷 Segmentation</h4>
+      <p>Slicing the whole cake into different pieces based on flavor, size, and ingredients.</p>
+    </div>
+    <div class="card accent-tar">
+      <h4 style="color:var(--tar)">🎯 Targeting</h4>
+      <p>Choosing which slice you actually want to eat — deciding which segment is most attractive.</p>
+    </div>
+    <div class="card accent-pos">
+      <h4 style="color:var(--pos)">📌 Positioning</h4>
+      <p>Decorating and presenting that slice attractively to make it desirable and distinctive.</p>
+    </div>
+  </div>
+
+  <div class="diagram-wrap">
+    <div class="diagram-label">Complete STP Process End-to-End</div>
+    <div class="mermaid">
+flowchart LR
+  EM([🌐 Entire Market]) --> S([📊 Segmentation]) --> MS([Market Segments]) --> T([🎯 Targeting]) --> CS([Chosen Segment]) --> P([📌 Positioning]) --> BI([💎 Brand Image])
+  style EM fill:#1e2435,stroke:#8892a8,color:#e8eaf2
+  style S fill:#1e2435,stroke:#4f8ef7,color:#4f8ef7
+  style MS fill:#2a3148,stroke:#4f8ef7,color:#c5cad8
+  style T fill:#1e2435,stroke:#f7934f,color:#f7934f
+  style CS fill:#2a3148,stroke:#f7934f,color:#c5cad8
+  style P fill:#1e2435,stroke:#4fcfa0,color:#4fcfa0
+  style BI fill:#2a3148,stroke:#4fcfa0,color:#4fcfa0
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════ 7. INTEGRATION EXAMPLE ══════════ -->
+<div id="integration" class="fade-in">
+  <div class="section-label">Section 07</div>
+  <h2 class="section-title" style="border-color:#c47cf5">STP Integration — Real-World Examples</h2>
+
+  <!-- Apple -->
+  <h3 class="sub-title">🍎 Apple — Complete STP Example</h3>
+  <div class="grid-3">
+    <div class="card accent-seg">
+      <h4 style="color:var(--seg)">Segmentation</h4>
+      <p>Technology users segmented by <strong>income, lifestyle, and usage patterns</strong>. Premium vs budget, professional vs casual.</p>
+    </div>
+    <div class="card accent-tar">
+      <h4 style="color:var(--tar)">Targeting</h4>
+      <p>Focuses on <strong>urban premium consumers</strong> — those who value design, ecosystem, and status alongside functionality.</p>
+    </div>
+    <div class="card accent-pos">
+      <h4 style="color:var(--pos)">Positioning</h4>
+      <p>Positioned as an <strong>innovative, premium, and aspirational brand</strong> — technology that inspires and elevates lifestyle.</p>
+    </div>
+  </div>
+
+  <div class="diagram-wrap">
+    <div class="diagram-label">Apple STP Flow</div>
+    <div class="mermaid">
+flowchart LR
+  TM([Technology Market]) --> PC([Premium Consumers]) --> AP([Apple Positioning])
+  AP --> IN([🔬 Innovation])
+  AP --> PR([👑 Prestige])
+  AP --> EC([🔗 Ecosystem])
+  style TM fill:#1e2435,stroke:#4f8ef7,color:#4f8ef7
+  style PC fill:#1e2435,stroke:#f7934f,color:#f7934f
+  style AP fill:#1e2435,stroke:#4fcfa0,color:#4fcfa0
+  style IN fill:#2a3148,stroke:#4fcfa0,color:#c5cad8
+  style PR fill:#2a3148,stroke:#4fcfa0,color:#c5cad8
+  style EC fill:#2a3148,stroke:#4fcfa0,color:#c5cad8
+    </div>
+  </div>
+
+  <!-- Maruti -->
+  <h3 class="sub-title">🚗 Maruti Suzuki — Complete STP Example</h3>
+  <div class="grid-3">
+    <div class="card accent-seg">
+      <h4 style="color:var(--seg)">Segmentation</h4>
+      <p>Indian car buyers segmented by <strong>income level, age group, and lifestyle</strong> (budget families, middle class, youth, premium).</p>
+    </div>
+    <div class="card accent-tar">
+      <h4 style="color:var(--tar)">Targeting</h4>
+      <p>Targets <strong>multiple segments simultaneously</strong> with differentiated products — from budget buyers to premium NEXA customers.</p>
+    </div>
+    <div class="card accent-pos">
+      <h4 style="color:var(--pos)">Positioning</h4>
+      <p>Positioned as <strong>India's most trusted family car brand</strong> — combining reliability, value, and strong service network.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════ 8. EXAM TOPICS ══════════ -->
+<div id="exam-topics" class="fade-in">
+  <div class="section-label">Section 08</div>
+  <h2 class="section-title" style="border-color:#f76f87">🎯 High-Importance Exam Topics</h2>
+
+  <div class="grid-2">
+    <div>
+      <h4 class="tag-title" style="color:var(--seg)">Part 1 — STP &amp; Segmentation</h4>
+      <ul class="check">
+        <li>STP Model — meaning and importance</li>
+        <li>Levels of Market Segmentation (all four)</li>
+        <li>Mass vs Segment Marketing — differences</li>
+        <li>Niche Marketing — meaning and examples</li>
+        <li>Micro Marketing — local vs individual</li>
+        <li>Geographic Segmentation — variables and examples</li>
+        <li>Demographic Segmentation — most popular base</li>
+        <li>Psychographic Segmentation — lifestyle-based</li>
+        <li>Behavioral Segmentation — most useful base</li>
+        <li>Examples for each segmentation base</li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="tag-title" style="color:var(--tar)">Part 2 — Targeting &amp; Positioning</h4>
+      <ul class="check">
+        <li>Meaning and importance of targeting</li>
+        <li>Five segment evaluation criteria</li>
+        <li>Four targeting strategies with differences</li>
+        <li>Differentiated vs Undifferentiated Marketing</li>
+        <li>Meaning and definition of positioning</li>
+        <li>Seven positioning bases with examples</li>
+        <li>Positioning statement format and example</li>
+        <li>Perceptual/Brand mapping</li>
+        <li>Differences among S, T and P (full table)</li>
+        <li>Complete STP Process (Apple/Maruti examples)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="diagram-wrap" style="margin-top:32px;">
+    <div class="diagram-label">Complete Unit 3 Mind Map</div>
+    <div class="mermaid">
+mindmap
+  root((Unit 3 — STP))
+    Segmentation
+      Levels
+        MassMarketing
+        SegmentMarketing
+        NicheMarketing
+        MicroMarketing
+      Bases
+        Geographic
+        Demographic
+        Psychographic
+        Behavioral
+    Targeting
+      SegmentEvaluation
+        Size
+        Growth
+        Competition
+        Objectives
+        Resources
+      Strategies
+        Undifferentiated
+        Differentiated
+        Concentrated
+        Micromarketing
+    Positioning
+      Bases
+        Attributes
+        Benefits
+        Usage
+        User
+        Competitor
+        Category
+        PriceQuality
+      Tools
+        PositioningStatement
+        PerceptualMap
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ FOOTER ══════════ -->
+<div style="text-align:center;padding:40px 0 20px;color:var(--muted);font-size:12.5px;font-family:var(--font-mono);">
+  Unit 3 · Segmentation, Targeting &amp; Positioning · BBA — J.D. Birla Institute
+</div>
+
+</div><!-- end wrapper -->
+
+<script>
+  // Mermaid init
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      background: '#1e2435',
+      primaryColor: '#1e2435',
+      primaryTextColor: '#e8eaf2',
+      primaryBorderColor: '#4f8ef7',
+      lineColor: '#4f8ef7',
+      secondaryColor: '#2a3148',
+      tertiaryColor: '#2a3148',
+      nodeBorder: '#4f8ef7',
+      clusterBkg: '#1e2435',
+      titleColor: '#e8eaf2',
+      edgeLabelBackground: '#1e2435',
+      fontFamily: 'DM Sans, sans-serif',
+    },
+    flowchart: { curve: 'basis', htmlLabels: true },
+    mindmap: { padding: 16 }
+  });
+
+  // Fade-in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
